@@ -2,6 +2,7 @@ import networkx as nx
 import mido
 import time
 import itertools
+import argparse
 from constants import triads, note_to_midi_base
 
 # start fluidsynth
@@ -123,13 +124,14 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
 
     return graph
 
-def find_optimal_voice_leading(graph: nx.DiGraph, start_chords: list) -> list:
+def find_optimal_voice_leading(graph: nx.DiGraph, start_chords: list, chords: list) -> list:
     """
     Find the optimal voice leading path in the graph.
 
     Args:
         graph (nx.DiGraph): The voice leading graph.
         start_chords (list): A list of possible starting chords.
+        chords (list): The list of chords.
 
     Returns:
         list: A list of tuples representing the optimal voice leading path, containing the chord name, inversion, and MIDI notes for each chord.
@@ -155,22 +157,39 @@ def find_optimal_voice_leading(graph: nx.DiGraph, start_chords: list) -> list:
 
     return best_path_midis
 
-# Example usage
-chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
-midi_range = (45, 75)
+def main():
+    parser = argparse.ArgumentParser(description="Optimal Voice Leading")
+    parser.add_argument("--play", action="store_true", help="Initialize and play the MIDI sequence")
+    parser.add_argument("--print-graph", action="store_true", help="Pretty print the voice leading graph")
+    args = parser.parse_args()
 
-voice_leading_graph = build_voice_leading_graph(chords, midi_range)
-start_chords = [(node[0], node[1], node[2], node[3]) for node in voice_leading_graph.nodes() if node[0] == 0 and node[1] == chords[0]]
-optimal_path_midis = find_optimal_voice_leading(voice_leading_graph, start_chords)
+    # Example usage
+    chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
+    midi_range = (45, 75)
 
-print("Graph Nodes:")
-for node in voice_leading_graph.nodes(data=True):
-    print(node)
+    voice_leading_graph = build_voice_leading_graph(chords, midi_range)
+    start_chords = [(node[0], node[1], node[2], node[3]) for node in voice_leading_graph.nodes() if node[0] == 0 and node[1] == chords[0]]
+    optimal_path_midis = find_optimal_voice_leading(voice_leading_graph, start_chords, chords)
 
-print("\nOptimal Path:")
-for chord_name, inversion, midi_notes in optimal_path_midis:
-    print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
+    if args.print_graph:
+        print("Graph Nodes:")
+        for node in voice_leading_graph.nodes(data=True):
+            print(node)
 
-play_midi_sequence(optimal_path_midis)
+        print("\nGraph Edges:")
+        for edge in voice_leading_graph.edges(data=True):
+            print(edge)
 
-outport.close()
+    print("\nOptimal Path:")
+    for chord_name, inversion, midi_notes in optimal_path_midis:
+        print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
+
+    if args.play:
+        if fluidsynth_port:
+            play_midi_sequence(optimal_path_midis)
+            outport.close()
+        else:
+            print("FluidSynth virtual port not found. Skipping MIDI playback.")
+
+if __name__ == "__main__":
+    main()
