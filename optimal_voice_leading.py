@@ -129,11 +129,16 @@ def main():
     parser.add_argument("--output-midi", action="store_true", help="Output the optimal voice leading sequence to a MIDI file")
     parser.add_argument("--output-pdf", action="store_true", help="Output the optimal voice leading sequence to a PDF file with standard musical notation")
     parser.add_argument("--name", type=str, help="Specify the name of the song for output files")
+    parser.add_argument("--chords", type=str, default="", help="Specify the chord chart as a comma-separated string")
     args = parser.parse_args()
 
-    # Example usage
-    chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
-    # chords = ["C", "F", "G"]
+    if args.chords:
+        chords = args.chords.split(",")
+    else:
+        # Default chord chart (Giant Steps)
+        chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
+        print("No chord chart provided. Running on the Giant Steps progression.")
+    
     midi_range = (40, 90)
 
     voice_leading_graph = build_voice_leading_graph(chords, midi_range)
