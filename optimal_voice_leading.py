@@ -4,6 +4,9 @@ import argparse
 from constants import triads, note_to_midi_base
 from midi_utils import find_fluidsynth_port, play_midi_sequence, create_midi_file
 import mido
+from engraving_utils import convert_to_music21
+import os
+from datetime import datetime
 
 def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
     """
@@ -123,7 +126,9 @@ def main():
     parser = argparse.ArgumentParser(description="Optimal Voice Leading")
     parser.add_argument("--play", action="store_true", help="Initialize and play the MIDI sequence")
     parser.add_argument("--print-graph", action="store_true", help="Pretty print the voice leading graph")
-    parser.add_argument("--output-midi", type=str, help="Output the optimal voice leading sequence to a MIDI file")
+    parser.add_argument("--output-midi", action="store_true", help="Output the optimal voice leading sequence to a MIDI file")
+    parser.add_argument("--output-pdf", action="store_true", help="Output the optimal voice leading sequence to a PDF file with standard musical notation")
+    parser.add_argument("--name", type=str, help="Specify the name of the song for output files")
     args = parser.parse_args()
 
     # Example usage
@@ -148,9 +153,26 @@ def main():
     for chord_name, inversion, midi_notes in optimal_path_midis:
         print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
 
-    if args.output_midi:
-        create_midi_file(optimal_path_midis, args.output_midi)
+    if args.name:
+        song_name = args.name
+    else:
+        current_date = datetime.now().strftime("%Y%m%d")
+        song_name = current_date
 
+    output_dir = "output"
+    os.makedirs(output_dir, exist_ok=True)
+
+    if args.output_midi:
+        output_midi_file = os.path.join(output_dir, f"{song_name.lower().replace(' ', '_')}.mid")
+        create_midi_file(optimal_path_midis, output_midi_file)
+
+    if args.output_pdf:
+        score = convert_to_music21(optimal_path_midis, song_name)
+        output_xml = os.path.join(output_dir, f"{song_name.lower().replace(' ', '_')}.xml")
+        output_pdf = os.path.join(output_dir, f"{song_name.lower().replace(' ', '_')}.pdf")
+        score.write('musicxml', fp=output_xml)
+        score.show('musicxml.pdf', fp=output_pdf)
+        
     if args.play:
         fluidsynth_port = find_fluidsynth_port()
         if fluidsynth_port:
@@ -158,7 +180,7 @@ def main():
             play_midi_sequence(outport, optimal_path_midis)
             outport.close()
         else:
-            print("FluidSynth virtual port not found. Please make sure FluidSynth is running by executing: fluidsynth -a coreaudio -m coremidi /Users/wdickerson/Repos/scratchpad/gs/gs.sf2.")
+            print("FluidSynth virtual port not found. Please make sure FluidSynth is running by executing: fluidsynth -a coreaudio -m coremidi /path/to/soundfont.")
             exit(1)
 
 if __name__ == "__main__":
