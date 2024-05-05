@@ -2,7 +2,7 @@ import networkx as nx
 import itertools
 import argparse
 from constants import triads, note_to_midi_base
-from midi_player import find_fluidsynth_port, play_midi_sequence
+from midi_utils import find_fluidsynth_port, play_midi_sequence, create_midi_file
 import mido
 
 def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
@@ -123,6 +123,7 @@ def main():
     parser = argparse.ArgumentParser(description="Optimal Voice Leading")
     parser.add_argument("--play", action="store_true", help="Initialize and play the MIDI sequence")
     parser.add_argument("--print-graph", action="store_true", help="Pretty print the voice leading graph")
+    parser.add_argument("--output-midi", type=str, help="Output the optimal voice leading sequence to a MIDI file")
     args = parser.parse_args()
 
     # Example usage
@@ -146,6 +147,9 @@ def main():
     print("\nOptimal Path:")
     for chord_name, inversion, midi_notes in optimal_path_midis:
         print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
+
+    if args.output_midi:
+        create_midi_file(optimal_path_midis, args.output_midi)
 
     if args.play:
         fluidsynth_port = find_fluidsynth_port()

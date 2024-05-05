@@ -1,2 +1,3 @@
 *.pyc
+*.mid
 __pycache__/
