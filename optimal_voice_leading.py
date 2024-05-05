@@ -17,15 +17,15 @@ def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
         list: A list of lists, where each inner list represents a valid MIDI note combination for the triad within the range.
     """
     base_midis = [note_to_midi_base[note] for note in notes]
-    min_octave = (midi_range[0] - min(base_midis)) // 12
-    max_octave = (midi_range[1] - max(base_midis)) // 12
-    
-    octave_combinations = itertools.product(range(min_octave, max_octave + 1), repeat=len(notes))
+    octave_combinations = itertools.product(range(-2, 3), repeat=len(notes))
     valid_midis = []
 
     for octaves in octave_combinations:
         midi_notes = [base_midi + octave * 12 for base_midi, octave in zip(base_midis, octaves)]
-        if (midi_notes == sorted(midi_notes) and midi_notes[-1] - midi_notes[0] <= 24):
+        # Check if the MIDI notes are within the desired range, in ascending order, and within two octaves
+        if (all(midi_range[0] <= midi <= midi_range[1] for midi in midi_notes)
+                and midi_notes == sorted(midi_notes)
+                and midi_notes[-1] - midi_notes[0] <= 24):
             valid_midis.append(midi_notes)
 
     return valid_midis
