@@ -1,6 +1,6 @@
 from music21 import note, stream, meter, key, metadata, harmony
 
-def convert_to_music21(optimal_path_midis, song_name):
+def convert_to_music21(optimal_path_midis: list, song_name: str) -> stream.Score:
     """
     Convert the optimal voice leading path to a music21 Score object with arpeggiated triads and chord names displayed above each measure.
 
@@ -13,7 +13,6 @@ def convert_to_music21(optimal_path_midis, song_name):
     """
     score = stream.Score()
     part = stream.Part()
-    print("Optimal Path MIDIs:", optimal_path_midis)
 
     score.metadata = metadata.Metadata()
     score.metadata.title = f"{song_name} \n(Voice Leading Étude)"
@@ -24,11 +23,10 @@ def convert_to_music21(optimal_path_midis, song_name):
     score.append(time_signature)
     score.append(key_signature)
 
-    measure_duration = 4.0  # Assuming each measure has a duration of 4 beats
     current_measure = stream.Measure()
     current_time = 0.0
 
-    for chord_name, inversion, midi_notes in optimal_path_midis:
+    for chord_name, _, midi_notes in optimal_path_midis:
         # Parse the chord name to the correct format
         parsed_chord_name = chord_name.replace("b", "-")
         # Create a ChordSymbol object for the parsed chord name

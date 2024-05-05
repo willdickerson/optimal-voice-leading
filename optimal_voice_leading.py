@@ -1,12 +1,13 @@
-import networkx as nx
 import itertools
 import argparse
-from constants import triads, note_to_midi_base
-from midi_utils import find_fluidsynth_port, play_midi_sequence, create_midi_file
-import mido
-from engraving_utils import convert_to_music21
 import os
 from datetime import datetime
+import networkx as nx
+import mido
+from constants import TRIADS, NOTE_TO_MIDI_BASE
+from midi_utils import find_fluidsynth_port, play_midi_sequence, create_midi_file
+from engraving_utils import convert_to_music21
+
 
 def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
     """
@@ -19,7 +20,7 @@ def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
     Returns:
         list: A list of lists, where each inner list represents a valid MIDI note combination for the triad within the range.
     """
-    base_midis = [note_to_midi_base[note] for note in notes]
+    base_midis = [NOTE_TO_MIDI_BASE[note] for note in notes]
     octave_combinations = itertools.product(range(-2, 3), repeat=len(notes))
     valid_midis = []
 
@@ -51,7 +52,7 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
         current_chord = chords[i]
         next_chord = chords[i + 1]
 
-        for current_inversion in triads[current_chord]:
+        for current_inversion in TRIADS[current_chord]:
             current_notes = current_inversion.split()
             current_midi_note_combinations = find_all_triads_in_range(current_notes, midi_range)
 
@@ -61,7 +62,7 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
 
                 next_nodes = []
 
-                for next_inversion in triads[next_chord]:
+                for next_inversion in TRIADS[next_chord]:
                     next_notes = next_inversion.split()
                     next_midi_note_combinations = find_all_triads_in_range(next_notes, midi_range)
 
@@ -117,12 +118,24 @@ def find_optimal_voice_leading(graph: nx.DiGraph, start_chords: list, chords: li
 
     if best_path:
         for node in best_path:
-            chord_index, chord_name, inversion, midi_notes = node
+            _, chord_name, inversion, midi_notes = node
             best_path_midis.append((chord_name, inversion, midi_notes))
 
     return best_path_midis
 
 def main():
+    """
+    Main function to parse command-line arguments, build the voice leading graph,
+    find the optimal voice leading path, and output the results based on the provided arguments.
+
+    Command-line arguments:
+        --play: Initialize and play the MIDI sequence.
+        --print-graph: Pretty print the voice leading graph.
+        --output-midi: Output the optimal voice leading sequence to a MIDI file.
+        --output-pdf: Output the optimal voice leading sequence to a PDF file with standard musical notation.
+        --name: Specify the name of the song for output files.
+        --chords: Specify the chord chart as a comma-separated string.
+    """
     parser = argparse.ArgumentParser(description="Optimal Voice Leading")
     parser.add_argument("--play", action="store_true", help="Initialize and play the MIDI sequence")
     parser.add_argument("--print-graph", action="store_true", help="Pretty print the voice leading graph")
@@ -138,13 +151,16 @@ def main():
         # Default chord chart (Giant Steps)
         chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
         print("No chord chart provided. Running on the Giant Steps progression.")
-    
-    midi_range = (40, 90)
 
+    midi_range = (40, 90)
     voice_leading_graph = build_voice_leading_graph(chords, midi_range)
     start_chords = [(node[0], node[1], node[2], node[3]) for node in voice_leading_graph.nodes() if node[0] == 0 and node[1] == chords[0]]
     optimal_path_midis = find_optimal_voice_leading(voice_leading_graph, start_chords, chords)
 
+    print("\nOptimal Path:")
+    for chord_name, inversion, midi_notes in optimal_path_midis:
+        print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
+    
     if args.print_graph:
         print("Graph Nodes:")
         for node in voice_leading_graph.nodes(data=True):
@@ -153,10 +169,6 @@ def main():
         print("\nGraph Edges:")
         for edge in voice_leading_graph.edges(data=True):
             print(edge)
-
-    print("\nOptimal Path:")
-    for chord_name, inversion, midi_notes in optimal_path_midis:
-        print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
 
     if args.name:
         song_name = args.name

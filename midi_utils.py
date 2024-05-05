@@ -1,9 +1,6 @@
-import mido
 import time
-
-CHORD_DURATION = 0.5
-PAUSE_DURATION = 0.1
-MIDI_VELOCITY = 127
+import mido
+from constants import CHORD_DURATION, MIDI_VELOCITY, PAUSE_DURATION
 
 def find_fluidsynth_port() -> str:
     """
@@ -62,7 +59,7 @@ def create_midi_file(optimal_path_midis: list, output_file: str):
 
     track.append(mido.MetaMessage('set_tempo', tempo=mido.bpm2tempo(120)))
 
-    for chord_name, inversion, midi_notes in optimal_path_midis:
+    for _, _, midi_notes in optimal_path_midis:
         for i, note in enumerate(midi_notes):
             if i < 2:
                 track.append(mido.Message('note_on', note=note, velocity=64, time=0))
