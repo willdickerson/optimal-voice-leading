@@ -3,6 +3,7 @@ import itertools
 import argparse
 from constants import triads, note_to_midi_base
 from midi_player import find_fluidsynth_port, play_midi_sequence
+import mido
 
 def find_closest_triad_in_range(notes: list, midi_range: tuple) -> list:
     """
