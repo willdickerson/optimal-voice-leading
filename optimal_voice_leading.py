@@ -1,3 +1,16 @@
+"""
+This script provides functionality to find the optimal voice leading triads through a 
+sequence of chords. It parses command-line arguments to output various forms of the triad 
+sequence, such as playing it as MIDI, outputting to a PDF, or displaying the voice leading 
+graph. Uses various utility modules to handle MIDI files and musical engraving.
+
+Usage:
+    python optimal_voice_leading.py [options]
+
+Options:
+    --play, --print-graph, --output-midi, --output-pdf, etc.
+"""
+
 import argparse
 import os
 from datetime import datetime

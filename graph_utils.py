@@ -1,3 +1,10 @@
+"""
+Provides utility functions for constructing and analyzing voice leading graphs.
+This includes finding all possible triads within a specified MIDI range, building a directed graph
+of possible paths, and finding the optimal path through this graph based on minimum voice leading 
+movement.
+"""
+
 import itertools
 import networkx as nx
 from constants import TRIADS, NOTE_TO_MIDI_BASE

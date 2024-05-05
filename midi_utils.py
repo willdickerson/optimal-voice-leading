@@ -1,3 +1,10 @@
+"""
+Contains utility functions to interact with MIDI devices and files. It includes functions to 
+find the FluidSynth virtual port, play MIDI notes and sequences, and create MIDI files based 
+on optimal voice leading paths. These functions help in both live MIDI playback and storing 
+MIDI sequences for future use.
+"""
+
 import time
 import mido
 from constants import CHORD_DURATION, MIDI_VELOCITY, PAUSE_DURATION
