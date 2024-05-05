@@ -33,6 +33,7 @@ def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
 def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
     """
     Build a directed graph representing the voice leading possibilities between chords.
+    Adjusts for repeated chords by choosing the next smallest non-zero voice leading cost.
 
     Args:
         chords (list): A list of chord names.
@@ -55,6 +56,8 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
                 current_node = (i, current_chord, current_inversion, tuple(current_midi_notes))
                 graph.add_node(current_node)
 
+                next_nodes = []
+
                 for next_inversion in triads[next_chord]:
                     next_notes = next_inversion.split()
                     next_midi_note_combinations = find_all_triads_in_range(next_notes, midi_range)
@@ -62,9 +65,26 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
                     for next_midi_notes in next_midi_note_combinations:
                         next_node = (i + 1, next_chord, next_inversion, tuple(next_midi_notes))
                         cost = sum(abs(curr_midi - prev_midi) for prev_midi, curr_midi in zip(current_midi_notes, next_midi_notes))
+                        next_nodes.append((next_node, cost))
+
+                # If the current and next chords are the same, and there are multiple nodes, select the one with the smallest non-zero cost
+                if current_chord == next_chord:
+                    next_nodes.sort(key=lambda x: x[1])
+                    # This filters out zero-cost paths and selects the smallest non-zero cost path
+                    filtered_nodes = [node for node in next_nodes if node[1] > 0]
+                    if filtered_nodes:
+                        next_node, cost = filtered_nodes[0]
+                        graph.add_edge(current_node, next_node, weight=cost)
+                    else:
+                        # If all costs are zero (unlikely but possible with identical chords and inversions), revert to the smallest cost
+                        next_node, cost = next_nodes[0]
+                        graph.add_edge(current_node, next_node, weight=cost)
+                else:
+                    for next_node, cost in next_nodes:
                         graph.add_edge(current_node, next_node, weight=cost)
 
     return graph
+
 
 def find_optimal_voice_leading(graph: nx.DiGraph, start_chords: list, chords: list) -> list:
     """
