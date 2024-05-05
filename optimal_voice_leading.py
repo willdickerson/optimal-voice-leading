@@ -5,33 +5,30 @@ from constants import triads, note_to_midi_base
 from midi_player import find_fluidsynth_port, play_midi_sequence
 import mido
 
-def find_closest_triad_in_range(notes: list, midi_range: tuple) -> list:
+def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
     """
-    Find the closest triad within the specified MIDI range.
+    Find all possible ways to play a triad within the specified MIDI range.
 
     Args:
         notes (list): A list of note names representing the triad.
         midi_range (tuple): A tuple specifying the desired MIDI range (min, max).
 
     Returns:
-        list: A list of MIDI note numbers representing the closest triad within the range.
+        list: A list of lists, where each inner list represents a valid MIDI note combination for the triad within the range.
     """
     base_midis = [note_to_midi_base[note] for note in notes]
     octave_combinations = itertools.product(range(-2, 3), repeat=len(notes))
-    best_midis = None
-    best_distance = float('inf')
+    valid_midis = []
 
     for octaves in octave_combinations:
         midi_notes = [base_midi + octave * 12 for base_midi, octave in zip(base_midis, octaves)]
-        # Check if the MIDI notes are within the desired range and in ascending order
-        if all(midi_range[0] <= midi <= midi_range[1] for midi in midi_notes) and midi_notes == sorted(midi_notes):
-            # Calculate the distance between the MIDI notes and the center of the range
-            distance = sum(abs(midi - midi_range[0] - (midi_range[1] - midi_range[0]) // 2) for midi in midi_notes)
-            if distance < best_distance:
-                best_midis = midi_notes
-                best_distance = distance
+        # Check if the MIDI notes are within the desired range, in ascending order, and within two octaves
+        if (all(midi_range[0] <= midi <= midi_range[1] for midi in midi_notes)
+                and midi_notes == sorted(midi_notes)
+                and midi_notes[-1] - midi_notes[0] <= 24):
+            valid_midis.append(midi_notes)
 
-    return best_midis
+    return valid_midis
 
 def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
     """
@@ -52,19 +49,19 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
 
         for current_inversion in triads[current_chord]:
             current_notes = current_inversion.split()
-            current_midi_notes = find_closest_triad_in_range(current_notes, midi_range)
+            current_midi_note_combinations = find_all_triads_in_range(current_notes, midi_range)
 
-            if current_midi_notes:
+            for current_midi_notes in current_midi_note_combinations:
                 current_node = (i, current_chord, current_inversion, tuple(current_midi_notes))
                 graph.add_node(current_node)
 
                 for next_inversion in triads[next_chord]:
                     next_notes = next_inversion.split()
-                    next_midi_notes = find_closest_triad_in_range(next_notes, midi_range)
+                    next_midi_note_combinations = find_all_triads_in_range(next_notes, midi_range)
 
-                    if next_midi_notes:
+                    for next_midi_notes in next_midi_note_combinations:
                         next_node = (i + 1, next_chord, next_inversion, tuple(next_midi_notes))
-                        cost = sum(min(abs(prev_midi - curr_midi), 12 - abs(prev_midi - curr_midi)) for prev_midi, curr_midi in zip(current_midi_notes, next_midi_notes))
+                        cost = sum(abs(curr_midi - prev_midi) for prev_midi, curr_midi in zip(current_midi_notes, next_midi_notes))
                         graph.add_edge(current_node, next_node, weight=cost)
 
     return graph
@@ -110,6 +107,7 @@ def main():
 
     # Example usage
     chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
+    # chords = ["C", "F", "G"]
     midi_range = (40, 90)
 
     voice_leading_graph = build_voice_leading_graph(chords, midi_range)
