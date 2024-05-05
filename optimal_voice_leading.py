@@ -13,7 +13,7 @@ MIDI_VELOCITY = 127
 CHORD_DURATION = 0.5
 PAUSE_DURATION = 0.1
 
-def find_fluidsynth_port():
+def find_fluidsynth_port() -> str:
     """
     Find the FluidSynth virtual port from the available output ports.
 
@@ -26,19 +26,12 @@ def find_fluidsynth_port():
             return name
     return None
 
-fluidsynth_port = find_fluidsynth_port()
-
-if fluidsynth_port:
-    outport = mido.open_output(fluidsynth_port)
-else:
-    print("FluidSynth virtual port not found. Please make sure FluidSynth is running by executing: fluidsynth -a coreaudio -m coremidi /Users/wdickerson/Repos/scratchpad/gs/gs.sf2.")
-    exit(1)
-
-def play_note(midi_note: int, duration: float = CHORD_DURATION, velocity: int = MIDI_VELOCITY) -> None:
+def play_note(outport: mido.ports.IOPort, midi_note: int, duration: float = CHORD_DURATION, velocity: int = MIDI_VELOCITY) -> None:
     """
     Play a MIDI note with the specified duration and velocity.
 
     Args:
+        outport (mido.ports.IOPort): The MIDI output port.
         midi_note (int): The MIDI note number to play.
         duration (float): The duration of the note in seconds (default: CHORD_DURATION).
         velocity (int): The velocity of the note (default: MIDI_VELOCITY).
@@ -47,17 +40,18 @@ def play_note(midi_note: int, duration: float = CHORD_DURATION, velocity: int = 
     time.sleep(duration)
     outport.send(mido.Message('note_off', note=midi_note, velocity=velocity))
 
-def play_midi_sequence(midi_numbers: list) -> None:
+def play_midi_sequence(outport: mido.ports.IOPort, midi_numbers: list) -> None:
     """
     Play a sequence of MIDI chords.
 
     Args:
+        outport (mido.ports.IOPort): The MIDI output port.
         midi_numbers (list): A list of tuples containing the chord name, inversion, and MIDI notes for each chord.
     """
     for chord_name, inversion, midi_notes in midi_numbers:
         print(f"Playing {chord_name}: {inversion}")
         for midi_note in midi_notes:
-            play_note(midi_note)
+            play_note(outport, midi_note)
         time.sleep(PAUSE_DURATION)
 
 def find_closest_triad_in_range(notes: list, midi_range: tuple) -> list:
@@ -165,7 +159,7 @@ def main():
 
     # Example usage
     chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
-    midi_range = (45, 75)
+    midi_range = (40, 90)
 
     voice_leading_graph = build_voice_leading_graph(chords, midi_range)
     start_chords = [(node[0], node[1], node[2], node[3]) for node in voice_leading_graph.nodes() if node[0] == 0 and node[1] == chords[0]]
@@ -185,11 +179,14 @@ def main():
         print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
 
     if args.play:
+        fluidsynth_port = find_fluidsynth_port()
         if fluidsynth_port:
-            play_midi_sequence(optimal_path_midis)
+            outport = mido.open_output(fluidsynth_port)
+            play_midi_sequence(outport, optimal_path_midis)
             outport.close()
         else:
-            print("FluidSynth virtual port not found. Skipping MIDI playback.")
+            print("FluidSynth virtual port not found. Please make sure FluidSynth is running by executing: fluidsynth -a coreaudio -m coremidi /Users/wdickerson/Repos/scratchpad/gs/gs.sf2.")
+            exit(1)
 
 if __name__ == "__main__":
     main()
