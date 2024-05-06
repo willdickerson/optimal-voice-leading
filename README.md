@@ -79,4 +79,4 @@ Here's a sample of the MIDI output for the "Giant Steps" chord progression. Note
 
 And here's the corresponding score:
 
-![Screenshot 2024-05-05 at 9 57 01 PM](https://github.com/willdickerson/optimal-voice-leading/assets/33757383/dcbc2fd9-9151-4820-b076-e7385a66cc1a)
+![Screenshot 2024-05-06 at 7 43 13 AM](https://github.com/willdickerson/optimal-voice-leading/assets/33757383/b7504a10-97e2-4791-880c-79c62d28fe5f)
