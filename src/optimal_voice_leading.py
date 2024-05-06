@@ -82,7 +82,7 @@ def main():
         current_date = datetime.now().strftime("%Y%m%d")
         song_name = current_date
 
-    output_dir = "output"
+    output_dir = "../output"
     os.makedirs(output_dir, exist_ok=True)
 
     if args.output_midi:
