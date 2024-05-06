@@ -44,6 +44,7 @@ def play_midi_sequence(outport: mido.ports.IOPort, midi_numbers: list) -> None:
         outport (mido.ports.IOPort): The MIDI output port.
         midi_numbers (list): A list of tuples containing the chord name, inversion, and MIDI notes for each chord.
     """
+    print("\nPlaying MIDI sequence:")
     for chord_name, inversion, midi_notes in midi_numbers:
         print(f"Playing {chord_name}: {inversion}")
         for midi_note in midi_notes:

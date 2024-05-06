@@ -15,6 +15,7 @@ import argparse
 import os
 from datetime import datetime
 import mido
+import constants
 from midi_utils import find_fluidsynth_port, play_midi_sequence, create_midi_file
 from engraving_utils import convert_to_music21
 from graph_utils import build_voice_leading_graph, find_optimal_voice_leading
@@ -43,12 +44,14 @@ def main():
     parser.add_argument("--range", type=str, default="40,90", help="Specify the note range as a comma-separated string (e.g., '40,90')")
     args = parser.parse_args()
 
+    print("\nOptimal Voice Leading")
+
     if args.chords:
         chords = args.chords.split(",")
     else:
         # Default chord chart (Giant Steps)
-        chords = ["B", "D", "G", "Bb", "Eb", "Eb", "Am", "D", "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"]
-        print("No chord chart provided. Running on the Giant Steps progression.")
+        chords = constants.GIANT_STEPS
+        print("\nNo chord chart provided. Running on the Giant Steps progression.")
 
     if args.range:
         midi_range = tuple(map(int, args.range.split(",")))
@@ -65,7 +68,7 @@ def main():
         print(f"{chord_name}: {inversion} -> MIDI Notes: {midi_notes}")
     
     if args.print_graph:
-        print("Graph Nodes:")
+        print("\nGraph Nodes:")
         for node in voice_leading_graph.nodes(data=True):
             print(node)
 
@@ -100,7 +103,7 @@ def main():
             play_midi_sequence(outport, optimal_path_midis)
             outport.close()
         else:
-            print("FluidSynth virtual port not found. Please make sure FluidSynth is running by executing: fluidsynth -a coreaudio -m coremidi /path/to/soundfont.")
+            print("\nFluidSynth virtual port not found. Please make sure FluidSynth is running by executing: fluidsynth -a coreaudio -m coremidi /path/to/soundfont.")
             exit(1)
 
 if __name__ == "__main__":
