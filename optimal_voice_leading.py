@@ -51,7 +51,7 @@ def main():
     else:
         # Default chord chart (Giant Steps)
         chords = constants.GIANT_STEPS
-        print("\nNo chord chart provided. Running on the Giant Steps progression.")
+        print("\nDefault chord sequence 'Giant Steps' is used.")
 
     if args.range:
         midi_range = tuple(map(int, args.range.split(",")))
