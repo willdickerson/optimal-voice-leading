@@ -1,3 +1,9 @@
+"""
+This module contains functions to convert MIDI sequences into musical notation 
+using the music21 library. The module supports displaying arpeggiated triads 
+and chord symbols above measures.
+"""
+
 from music21 import note, stream, meter, key, metadata, harmony
 
 def convert_to_music21(optimal_path_midis: list, song_name: str) -> stream.Score:
