@@ -51,7 +51,7 @@ def convert_to_music21(optimal_path_midis: list, song_name: str) -> stream.Score
 
         # Create individual notes for each MIDI note in the triad
         for i, midi_note in enumerate(midi_notes):
-            note_obj = note.Note(midi_note)
+            note_obj = note.Note(midi_note + 12) # Transpose up an octave
             if i < 2:
                 note_obj.duration.type = 'quarter'
             else:
