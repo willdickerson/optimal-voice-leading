@@ -2,12 +2,13 @@
 
 ## Introduction
 
-Voice leading is the practice of connecting chords in a musical progression in a way that creates a smooth and coherent melodic line. In a simple chord progression, like C to F, the optimal voice leading triads would be:
+Voice leading is the practice of connecting chords in a musical progression with minimal movement. In a simple chord progression, like C to F, the optimal triads in a voice-leading sense would be:
 
 C: C E G
+
 F: C F A
 
-Notice how the upper voices (E and G) move to the nearest notes in the F chord (F and A), while the bottom voice (C) stays the same. This minimizes the total movement of the voices, creating a smooth transition between the chords.
+Notice how the upper voices (E and G) move to the nearest notes in the F chord (F and A), while the bottom voice (C) stays the same. This minimizes the total movement of the voices.
 
 ## Longer Chord Progressions
 
@@ -18,7 +19,7 @@ algorithm to find the shortest path through this graph, which corresponds to the
 
 ## Usage
 
-To use this tool, you'll need to have Python installed. You can install the necessary dependencies using pip:
+Install the dependencies:
 
 ```
 pip install -r requirements.txt
@@ -46,10 +47,10 @@ brew install musescore
 
 ## Examples
 
-Here's a sample of the MIDI output for the "Giant Steps" chord progression:
+Here's a sample of the MIDI output for the "Giant Steps" chord progression. Note that chords are added behind the arpeggiated triads for context:
 
-[Insert MIDI sample here]
+[Giant Steps Sample](https://drive.google.com/file/d/1x0WVoXqH2icyvHJOL9qEqv4VNXzotbo5/preview)
 
-And here's the corresponding PDF score:
+And here's the corresponding score:
 
-[Insert PDF sample here]
+![Screenshot 2024-05-05 at 9 57 01 PM](https://github.com/willdickerson/optimal-voice-leading/assets/33757383/dcbc2fd9-9151-4820-b076-e7385a66cc1a)
