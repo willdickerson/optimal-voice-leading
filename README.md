@@ -14,7 +14,7 @@ J. S. Bach was the master of voice leading, as exemplified in his chorales.
 
 ## About Triads
 
-A triad consists of three notes derived from a scale. For example, A C major triad with the notes CEG is formed from the 1st, 3rd, and 5th degrees of the C major scale. These notes can be arranged in any sequence and still represent the same triad, offering six permutations. On a guitar, due to the instrument's range, each permutation can be played in multiple ways, expanding the possibilities beyond just six.
+A triad consists of three notes derived from a scale. For example, a C major triad with the notes CEG is formed from the 1st, 3rd, and 5th degrees of the C major scale. These notes can be arranged in any sequence and still represent the same triad, offering six permutations. On a guitar, due to the instrument's range, each permutation can be played in multiple ways, expanding the possibilities beyond just six.
 
 ## The Program
 
