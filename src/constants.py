@@ -61,11 +61,11 @@ TRIADS = {
     'Eaug': ['E G# B', 'B E G#', 'G# B E'],
     'Fdim': ['F Ab Cb', 'Cb F Ab', 'Ab Cb F'],
     'Faug': ['F A C#', 'C# F A', 'A C# F'],
-    'F#dim': ['F# A C', 'C F# A', 'A C F#'],
+    'F#dim': ['F# C A', 'A F# C', 'C A F#'],
     'Gbdim': ['F# A C', 'C F# A', 'A C F#'],
     'F#aug': ['F# A# C#', 'C# F# A#', 'A# C# F#'],
     'Gbaug': ['F# Bb D', 'D F# Bb', 'Bb D F#'],
-    'Gdim': ['G Bb Db', 'Db G Bb', 'Bb Db G'],
+    'Gdim': ['G Db Bb', 'Bb G Db', 'Db Bb G'],
     'Gaug': ['G B D#', 'D# G B', 'B D# G'],
     'G#dim': ['Ab B D', 'D Ab B', 'B D Ab'],
     'Abdim': ['Ab B D', 'D Ab B', 'B D Ab'],
@@ -77,7 +77,7 @@ TRIADS = {
     'Bbdim': ['Bb Db F', 'F Bb Db', 'Db F Bb'],
     'A#aug': ['Bb D F#', 'F# Bb D', 'D F# Bb'],
     'Bbaug': ['Bb D F#', 'F# Bb D', 'D F# Bb'],
-    'Bdim': ['B D F', 'F B D', 'D F B'],
+    'Bdim': ['B F D', 'D B F', 'F D B'],
     'Baug': ['B D# G', 'G B D#', 'D# G B'],
 }
 
@@ -92,7 +92,6 @@ NOTE_TO_MIDI_BASE = {
 GIANT_STEPS = [
     "B", "D", "G", "Bb", "Eb", "Eb", "Am", "D",
     "G", "Bb", "Eb", "F#", "B", "B", "Fm", "Bb",
-    "F", "Ab", "Db", "E", "A", "C", "Cm", "F",
     "Eb", "Eb", "Am", "D", "G", "G", "C#m", "F#", 
     "B", "B", "Fm", "Bb", "Eb", "Eb", "C#m", "F#"
 ]
@@ -117,7 +116,7 @@ ALL_THE_THINGS_YOU_ARE = [
     "F#dim", "F#dim", "B", "B", "E", "E", "C", "C",
     "Fm", "Fm", "Bbm", "Bbm", "Eb", "Eb", "Ab", "Ab",
     "Db", "Db", "Dbm", "Dbm", "Cm", "Cm", "Bdim", "Bdim",
-    "Bbm", "Bbm", "Eb", "Eb", "Ab", "Ab", "Gdim", "C"
+    "Bbm", "Bbm", "Eb", "Eb", "Ab", "Ab", "Gm", "C"
 ]
 
 CHORD_DURATION = 0.5
