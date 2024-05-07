@@ -18,7 +18,7 @@ A triad consists of three notes derived from a scale. For example, a C major tri
 
 ## The Program
 
-This program takes a chord progression (defaulting to John Coltrane's "Giant Steps") and a specified range (default for guitar is 40, 90) and constructs a directed graph. Each node in the graph represents different permutations of the notes within each chord, played in various ways across the specified range. Edges represent the sum of movement steps for each voice in the triad from one node to another. The program utilizes Dijkstra's algorithm to determine the path that minimizes this movement, outputting results in various formats.
+This program takes a chord progression (defaulting to John Coltrane's "Giant Steps") and a specified range (default for guitar is 40, 90) and constructs a directed graph. Each node in the graph represents a different permutation of the notes within each chord, played in various ways across the specified range. Edges represent the sum of movement steps for each voice in the triad from one node to another. The program uses Dijkstra's algorithm to determine the path that minimizes this movement, outputting results in various formats.
 
 ## Why Is This Important?
 
