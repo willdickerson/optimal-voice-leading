@@ -10,7 +10,7 @@ F: C F A
 
 Here, the upper voices (E and G) move to the nearest notes in the F chord (F and A), while the bottom voice (C) remains static, thus minimizing total movement.
 
-J. S. Bach was the master of voice leading, as exemplified in his chorales.
+The presiding genius of voice leading is J. S. Bach. Listen to his chorales or The Well-Tempered Clavier and you'll see what I mean. 
 
 ## About Triads
 
