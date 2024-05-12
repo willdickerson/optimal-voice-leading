@@ -7,11 +7,12 @@ movement.
 
 import itertools
 import networkx as nx
-from constants import TRIADS, NOTE_TO_MIDI_BASE
+from constants import NOTE_TO_MIDI_BASE
 
 def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
     """
-    Find all possible ways to play a triad within the specified MIDI range.
+    Find all possible ways to play a triad within the specified MIDI range, 
+    ensuring that no two neighboring notes in the triad are more than one octave apart.
 
     Args:
         notes (list): A list of note names representing the triad.
@@ -26,15 +27,16 @@ def find_all_triads_in_range(notes: list, midi_range: tuple) -> list:
 
     for octaves in octave_combinations:
         midi_notes = [base_midi + octave * 12 for base_midi, octave in zip(base_midis, octaves)]
-        # Check if the MIDI notes are within the desired range, in ascending order, and within two octaves
-        if (all(midi_range[0] <= midi <= midi_range[1] for midi in midi_notes)
-                and midi_notes == sorted(midi_notes)
-                and midi_notes[-1] - midi_notes[0] <= 24):
-            valid_midis.append(midi_notes)
+        # Check if the MIDI notes are within the desired range and in ascending order
+        if (all(midi_range[0] <= midi <= midi_range[1] for midi in midi_notes) and midi_notes == sorted(midi_notes)):
+            # Check that no two neighboring notes are more than an octave apart
+            if all(abs(midi_notes[i+1] - midi_notes[i]) <= 12 for i in range(len(midi_notes) - 1)):
+                valid_midis.append(midi_notes)
 
     return valid_midis
 
-def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
+
+def build_voice_leading_graph(chords: list, midi_range: tuple, triads: dict) -> nx.DiGraph:
     """
     Build a directed graph representing the voice leading possibilities between chords.
     Adjusts for repeated chords by choosing the next smallest non-zero voice leading cost.
@@ -52,7 +54,7 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
         current_chord = chords[i]
         next_chord = chords[i + 1]
 
-        for current_inversion in TRIADS[current_chord]:
+        for current_inversion in triads[current_chord]:
             current_notes = current_inversion.split()
             current_midi_note_combinations = find_all_triads_in_range(current_notes, midi_range)
 
@@ -62,7 +64,7 @@ def build_voice_leading_graph(chords: list, midi_range: tuple) -> nx.DiGraph:
 
                 next_nodes = []
 
-                for next_inversion in TRIADS[next_chord]:
+                for next_inversion in triads[next_chord]:
                     next_notes = next_inversion.split()
                     next_midi_note_combinations = find_all_triads_in_range(next_notes, midi_range)
 

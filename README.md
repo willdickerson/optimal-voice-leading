@@ -66,9 +66,10 @@ Options include:
 - `--print-graph`: Display the voice leading graph.
 - `--output-midi`: Save the MIDI sequence.
 - `--output-pdf`: Generate a PDF of the music score.
-- `--name`: Set a custom name for the output files.
-- `--chords`: Define a specific chord progression.
-- `--range`: Specify the MIDI note range.
+- `--name`: Set a custom name for the output files. If not specified, the default is the current date.
+- `--chords`: Define a specific chord progression. Default is the "Giant Steps" progression.
+- `--range`: Specify the MIDI note range. Default is 40-90, which is the range of a guitar.
+- `--triad-type`: Specify the type of triads to generate. Can be 'all', 'close', or 'spread', defaulting to 'spread'.
 
 
 ## Examples

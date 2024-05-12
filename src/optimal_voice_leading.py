@@ -15,10 +15,11 @@ import argparse
 import os
 from datetime import datetime
 import mido
-import constants
+from constants import GIANT_STEPS
 from midi_utils import find_fluidsynth_port, play_midi_sequence, create_midi_file
 from engraving_utils import convert_to_music21
 from graph_utils import build_voice_leading_graph, find_optimal_voice_leading
+from chord_utils import generate_triads
 
 def main():
     """
@@ -42,6 +43,7 @@ def main():
     parser.add_argument("--name", type=str, help="Specify the name of the song for output files")
     parser.add_argument("--chords", type=str, default="", help="Specify the chord chart as a comma-separated string")
     parser.add_argument("--range", type=str, default="40,90", help="Specify the note range as a comma-separated string (e.g., '40,90')")
+    parser.add_argument("--triad-type", type=str, default='spread', help="Specify the type of triads to generate, can be 'all', 'close', or 'spread'.")
     args = parser.parse_args()
 
     print("\nOptimal Voice Leading")
@@ -50,8 +52,10 @@ def main():
         chords = args.chords.split(",")
     else:
         # Default chord chart (Giant Steps)
-        chords = constants.GIANT_STEPS
+        chords = GIANT_STEPS
         print("\nDefault chord sequence 'Giant Steps' is used.")
+
+    triads = {chord: generate_triads(chord, triad_type=args.triad_type) for chord in set(chords)}
 
     if args.range:
         midi_range = tuple(map(int, args.range.split(",")))
@@ -59,7 +63,7 @@ def main():
         # Default guitar range
         midi_range = (40, 90)
 
-    voice_leading_graph = build_voice_leading_graph(chords, midi_range)
+    voice_leading_graph = build_voice_leading_graph(chords, midi_range, triads)
     start_chords = [(node[0], node[1], node[2], node[3]) for node in voice_leading_graph.nodes() if node[0] == 0 and node[1] == chords[0]]
     optimal_path_midis = find_optimal_voice_leading(voice_leading_graph, start_chords, chords)
 
